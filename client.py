@@ -1,5 +1,6 @@
 import socket
 import time
+import hashlib
 
 HOST = "127.0.0.1"
 PORT = 5000
@@ -15,10 +16,33 @@ file_path = "files/input/test.txt"
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.settimeout(TIMEOUT)
 
+def calculate_sha256(file_path):
+
+    sha256 = hashlib.sha256()
+
+    with open(file_path, "rb") as file:
+
+        while True:
+
+            data = file.read(4096)
+
+            if not data:
+                break
+
+            sha256.update(data)
+
+    return sha256.hexdigest()
+
+original_hash = calculate_sha256(file_path)
+
+print(f"Orijinal dosya SHA-256: {original_hash}")
+
 seq_num = 0
 
 with open(file_path, "rb") as file:
+
     while True:
+
         chunk = file.read(CHUNK_SIZE)
 
         if not chunk:
@@ -36,19 +60,24 @@ with open(file_path, "rb") as file:
             print(f"Paket gönderildi. Sequence: {seq_num}, Deneme: {retries + 1}")
 
             try:
+
                 ack, address = client_socket.recvfrom(BUFFER_SIZE)
 
                 ack_text = ack.decode()
 
                 if ack_text == f"ACK|{seq_num}":
+
                     print(f"ACK alındı: {ack_text}")
                     ack_received = True
 
             except socket.timeout:
+
                 retries += 1
+
                 print(f"Timeout oluştu. Sequence {seq_num} tekrar gönderilecek.")
 
         if not ack_received:
+
             print("Maksimum yeniden gönderim sayısına ulaşıldı.")
             break
 
