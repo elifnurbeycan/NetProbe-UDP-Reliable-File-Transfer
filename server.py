@@ -16,7 +16,7 @@ print(f"Server listening on {HOST}:{PORT}")
 received_file_path = "files/received/received_test.txt"
 
 received_packets = set()
-dropped_ack = False
+# dropped_ack = False
 
 def calculate_sha256(file_path):
 
@@ -65,6 +65,7 @@ with open(received_file_path, "wb") as file:
 
         received_packets.add(seq_num)
 
+        """
         if seq_num == 0 and not dropped_ack:
 
             print("TEST: ACK bilerek gönderilmedi.")
@@ -72,6 +73,7 @@ with open(received_file_path, "wb") as file:
             dropped_ack = True
 
             continue
+        """
 
         file.write(chunk)
 
