@@ -22,7 +22,14 @@ with open(received_file_path, "wb") as file:
             print("Dosya aktarımı tamamlandı.")
             break
 
-        file.write(data)
-        print(f"Paket alındı: {len(data)} byte")
+        header, chunk = data.split(b"|", 1)
+        seq_num = int(header.decode())
+
+        file.write(chunk)
+
+        ack_message = f"ACK|{seq_num}"
+        server_socket.sendto(ack_message.encode(), address)
+
+        print(f"Paket alındı. Sequence: {seq_num}, Boyut: {len(chunk)} byte")
 
 print(f"Dosya kaydedildi: {received_file_path}")
