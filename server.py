@@ -14,6 +14,7 @@ print(f"Server listening on {HOST}:{PORT}")
 
 received_file_path = "files/received/received_test.txt"
 
+received_packets = set()
 dropped_ack = False
 
 with open(received_file_path, "wb") as file:
@@ -28,6 +29,16 @@ with open(received_file_path, "wb") as file:
         seq_num = int(header.decode())
 
         print(f"Paket alındı. Sequence: {seq_num}, Boyut: {len(chunk)} byte")
+
+        if seq_num in received_packets:
+            print(f"Duplicate paket tespit edildi. Sequence: {seq_num}. Dosyaya tekrar yazılmadı.")
+
+            ack_message = f"ACK|{seq_num}"
+            server_socket.sendto(ack_message.encode(), address)
+            print(f"ACK tekrar gönderildi: {ack_message}")
+            continue
+
+        received_packets.add(seq_num)
 
         if seq_num == 0 and not dropped_ack:
             print("TEST: ACK bilerek gönderilmedi.")
