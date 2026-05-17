@@ -1,6 +1,8 @@
 import socket
 import time
 import hashlib
+import csv
+import os
 
 HOST = "127.0.0.1"
 PORT = 5000
@@ -12,18 +14,18 @@ TIMEOUT = 1.0
 MAX_RETRIES = 5
 
 file_path = "files/input/test.txt"
+log_path = "logs/transfer_log.csv"
+
+os.makedirs("logs", exist_ok=True)
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.settimeout(TIMEOUT)
 
 def calculate_sha256(file_path):
-
     sha256 = hashlib.sha256()
 
     with open(file_path, "rb") as file:
-
         while True:
-
             data = file.read(4096)
 
             if not data:
@@ -34,56 +36,103 @@ def calculate_sha256(file_path):
     return sha256.hexdigest()
 
 original_hash = calculate_sha256(file_path)
-
 print(f"Orijinal dosya SHA-256: {original_hash}")
 
-seq_num = 0
+with open(log_path, "w", newline="") as log_file:
+    writer = csv.writer(log_file)
 
-with open(file_path, "rb") as file:
+    writer.writerow([
+        "sequence_number",
+        "send_time",
+        "ack_time",
+        "rtt",
+        "attempt",
+        "timeout",
+        "status"
+    ])
 
-    while True:
+    seq_num = 0
+    transfer_start = time.time()
 
-        chunk = file.read(CHUNK_SIZE)
+    with open(file_path, "rb") as file:
+        while True:
+            chunk = file.read(CHUNK_SIZE)
 
-        if not chunk:
-            break
+            if not chunk:
+                break
 
-        packet = f"{seq_num}|".encode() + chunk
+            packet = f"{seq_num}|".encode() + chunk
 
-        retries = 0
-        ack_received = False
+            retries = 0
+            ack_received = False
 
-        while retries < MAX_RETRIES and not ack_received:
+            while retries < MAX_RETRIES and not ack_received:
+                send_time = time.time()
 
-            client_socket.sendto(packet, (HOST, PORT))
+                client_socket.sendto(packet, (HOST, PORT))
 
-            print(f"Paket gönderildi. Sequence: {seq_num}, Deneme: {retries + 1}")
+                print(f"Paket gönderildi. Sequence: {seq_num}, Deneme: {retries + 1}")
 
-            try:
+                try:
+                    ack, address = client_socket.recvfrom(BUFFER_SIZE)
 
-                ack, address = client_socket.recvfrom(BUFFER_SIZE)
+                    ack_time = time.time()
+                    rtt = ack_time - send_time
 
-                ack_text = ack.decode()
+                    ack_text = ack.decode()
 
-                if ack_text == f"ACK|{seq_num}":
+                    if ack_text == f"ACK|{seq_num}":
+                        print(f"ACK alındı: {ack_text}")
 
-                    print(f"ACK alındı: {ack_text}")
-                    ack_received = True
+                        writer.writerow([
+                            seq_num,
+                            send_time,
+                            ack_time,
+                            rtt,
+                            retries + 1,
+                            "No",
+                            "ACK_RECEIVED"
+                        ])
 
-            except socket.timeout:
+                        ack_received = True
 
-                retries += 1
+                except socket.timeout:
+                    retries += 1
 
-                print(f"Timeout oluştu. Sequence {seq_num} tekrar gönderilecek.")
+                    print(f"Timeout oluştu. Sequence {seq_num} tekrar gönderilecek.")
 
-        if not ack_received:
+                    writer.writerow([
+                        seq_num,
+                        send_time,
+                        "",
+                        "",
+                        retries,
+                        "Yes",
+                        "TIMEOUT"
+                    ])
 
-            print("Maksimum yeniden gönderim sayısına ulaşıldı.")
-            break
+            if not ack_received:
+                print("Maksimum yeniden gönderim sayısına ulaşıldı.")
 
-        seq_num += 1
-        time.sleep(0.01)
+                writer.writerow([
+                    seq_num,
+                    "",
+                    "",
+                    "",
+                    retries,
+                    "Yes",
+                    "FAILED"
+                ])
+
+                break
+
+            seq_num += 1
+            time.sleep(0.01)
+
+    transfer_end = time.time()
 
 client_socket.sendto(b"END", (HOST, PORT))
 
 print("Dosya gönderimi tamamlandı.")
+print(f"Toplam aktarım süresi: {transfer_end - transfer_start:.4f} saniye")
+print(f"Log dosyası oluşturuldu: {log_path}")
