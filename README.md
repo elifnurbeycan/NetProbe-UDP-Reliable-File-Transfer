@@ -1,5 +1,16 @@
 # NetProbe - UDP Tabanlı Güvenilir Dosya Aktarım Sistemi
 
+### Bursa Teknik Üniversitesi
+### Bilgisayar Ağları Dersi Projesi
+
+**Grup-01**
+
+- Elif Nur Beycan - 24360859210
+- Kübra Kaya - 23360859736
+- Ceren Ebrar Yücetombullar - 22360859010
+
+**2025-2026**
+
 ## Proje Hakkında
 
 NetProbe, UDP protokolü kullanılarak geliştirilen güvenilir dosya aktarım sistemidir.
@@ -267,9 +278,3 @@ Ayrıca performans analizi ve Wireshark incelemeleri ile sistem farklı ağ koş
 
 ---
 
-**Bursa Teknik Üniversitesi**  
-**Bilgisayar Ağları Dersi Projesi**
-**Elif Nur Beycan 24360859210**
-**Kübra Kaya 23360859736**
-**Ceren Ebrar Yücetombullar 22360859010**
-**2025-2026**
