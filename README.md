@@ -1,184 +1,49 @@
-# NetProbe
+---
 
-Bilgisayar Ağları dersi kapsamında geliştirilen NetProbe, UDP protokolü üzerinde güvenilir dosya aktarımı gerçekleştiren ve ağ performansını analiz eden bir uygulamadır.
+## Desteklenen Deney Senaryoları
 
-## Proje Hakkında
+NetProbe farklı ağ koşullarının performans üzerindeki etkisini incelemek amacıyla parametrik olarak tasarlanmıştır.
 
-UDP protokolü doğası gereği paket teslim garantisi sağlamaz. Bu projede UDP üzerine uygulama katmanında;
+Aşağıdaki deneyler gerçekleştirilebilir:
 
-- ACK (Acknowledgment)
-- Sequence Number
-- Timeout Kontrolü
-- Retransmission
-- SHA-256 Bütünlük Doğrulaması
-
-mekanizmaları eklenerek güvenilir dosya aktarımı gerçekleştirilmiştir.
-
-Aktarım sürecinde oluşan ağ davranışları kaydedilmiş, analiz edilmiş ve grafiklerle görselleştirilmiştir.
+| Parametre | Açıklama |
+|------------|------------|
+| ACK Kayıp Oranı (%) | Sunucu tarafında ACK paketlerinin belirli bir oranla kaybedilmesi simüle edilir. |
+| Paket Boyutu (Chunk Size) | 512, 1024, 2048 byte gibi farklı paket boyutlarının performansa etkisi ölçülür. |
+| Dosya Boyutu | Küçük veya büyük dosyalar kullanılarak aktarım süresi ve verimlilik karşılaştırılır. |
+| Timeout Değeri | Timeout süresi değiştirilerek yeniden gönderim davranışı incelenir. |
+| Gönderilen Paket Sayısı | Test verisi miktarı değiştirilerek sistem yük altında test edilir. |
 
 ---
 
-## Kullanılan Teknolojiler
+## Ölçülen Performans Metrikleri
 
-- Python 3
-- UDP Socket Programlama
-- SHA-256
-- Pandas
-- Matplotlib
-- Wireshark
-- Kali Linux (VMware)
-- Visual Studio Code
+Her deney sonunda aşağıdaki performans değerleri hesaplanmaktadır:
 
----
-
-## Proje Yapısı
-
-```text
-NetProbe/
-│
-├── client.py
-├── server.py
-├── analysis.py
-│
-├── files/
-│
-├── logs/
-│   ├── transfer_log.csv
-│   ├── experiment_results.csv
-│   └── experiment_summary.csv
-│
-└── graphs/
-```
+| Metrik | Açıklama |
+|---------|---------|
+| RTT | Paket gönderimi ile ACK alınması arasındaki süre |
+| Throughput | Birim zamanda iletilen toplam veri miktarı |
+| Goodput | Başarıyla iletilen faydalı veri miktarı |
+| Completion Time | Dosya aktarımının tamamlanma süresi |
+| Timeout Count | Timeout oluşan paket sayısı |
+| Retransmission Count | Yeniden gönderilen paket sayısı |
+| Retransmission Rate | Yeniden gönderim oranı |
+| SHA-256 Verification | Dosya bütünlük doğrulaması |
 
 ---
 
-## Çalıştırma
+## Bu Depoda Yer Alan Örnek Sonuçlar
 
-### Sunucuyu Başlat
+Bu depodaki grafikler aşağıdaki deneylerden elde edilmiştir:
 
-```bash
-python3 server.py
-```
+| Deney | Değiştirilen Parametre |
+|--------|--------|
+| loss0 | %0 ACK kaybı |
+| loss10 | %10 ACK kaybı |
+| loss20 | %20 ACK kaybı |
+| loss30 | %30 ACK kaybı |
+| chunk512 | 512 Byte paket boyutu |
+| chunk2048 | 2048 Byte paket boyutu |
 
-### İstemciyi Başlat
-
-```bash
-python3 client.py
-```
-
-### Analizleri Oluştur
-
-```bash
-python3 analysis.py
-```
-
----
-
-# Performans Analizi
-
-Proje kapsamında farklı ağ koşulları altında deneyler gerçekleştirilmiş ve sonuçlar grafiklerle analiz edilmiştir.
-
-## Retransmission Rate Karşılaştırması
-
-ACK kayıp oranı arttıkça yeniden gönderim ihtiyacının arttığı gözlemlenmiştir.
-
-![Retransmission Rate](graphs/retransmission_rate_comparison.png)
-
----
-
-## Goodput Karşılaştırması
-
-Kayıp oranı arttıkça başarılı şekilde iletilen faydalı veri miktarının azaldığı görülmektedir.
-
-![Goodput Comparison](graphs/goodput_comparison.png)
-
----
-
-## Completion Time Karşılaştırması
-
-Kayıp oranının yükselmesi dosya aktarım süresini artırmaktadır.
-
-![Completion Time Comparison](graphs/completion_time_comparison.png)
-
----
-
-## RTT Analizi
-
-Farklı ağ koşullarında ölçülen RTT değerleri aşağıdaki grafiklerde gösterilmiştir.
-
-### %0 ACK Kaybı
-
-![RTT Loss0](graphs/loss0_rtt_graph.png)
-
-### %30 ACK Kaybı
-
-![RTT Loss30](graphs/loss30_rtt_graph.png)
-
----
-
-## Paket Boyutu Analizi
-
-Farklı paket boyutlarının ağ performansı üzerindeki etkisi incelenmiştir.
-
-### 512 Byte Paket
-
-![Chunk512](graphs/chunk512_rtt_graph.png)
-
-### 2048 Byte Paket
-
-![Chunk2048](graphs/chunk2048_rtt_graph.png)
-
----
-
-## Wireshark Analizi
-
-Proje boyunca UDP trafiği Wireshark kullanılarak izlenmiştir.
-
-İncelenen başlıca noktalar:
-
-- UDP paket akışı
-- ACK paketleri
-- Paket boyutları
-- Timeout sonrası yeniden gönderimler
-- Flow Graph analizi
-- I/O Graph analizi
-
-Bu sayede uygulama seviyesinde geliştirilen güvenilirlik mekanizmalarının ağ üzerindeki etkileri doğrulanmıştır.
-
----
-
-## Gerçekleştirilen Özellikler
-
-✅ Güvenilir UDP Dosya Aktarımı
-
-✅ ACK Mekanizması
-
-✅ Timeout Kontrolü
-
-✅ Retransmission
-
-✅ SHA-256 Dosya Doğrulama
-
-✅ RTT Hesaplama
-
-✅ Throughput Hesaplama
-
-✅ Goodput Hesaplama
-
-✅ CSV Loglama
-
-✅ Grafik Üretimi
-
-✅ Wireshark Trafik Analizi
-
----
-
-## Proje Ekibi
-
-- Elif Nur Beycan
-- Kübra Kaya
-- Ceren Ebrar Yücetombullar
-
-Bursa Teknik Üniversitesi  
-Bilgisayar Mühendisliği Bölümü  
-Bilgisayar Ağları Dönem Projesi - 2026
+Sistem farklı dosya boyutları, timeout değerleri ve paket boyutları ile de test edilebilecek şekilde tasarlanmıştır.
