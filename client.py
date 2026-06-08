@@ -7,10 +7,7 @@ import os
 HOST = "127.0.0.1"
 PORT = 5000
 
-CHUNK_SIZE = 1024
 BUFFER_SIZE = 1024
-
-TIMEOUT = 1.0
 MAX_RETRIES = 5
 
 file_path = "files/input/test.txt"
@@ -20,12 +17,16 @@ os.makedirs("logs", exist_ok=True)
 os.makedirs("files/input", exist_ok=True)
 
 data_count = int(input("Kaç adet test verisi oluşturulsun?: "))
+CHUNK_SIZE = int(input("Paket boyutu kaç byte olsun? Örn 512/1024/2048: "))
+TIMEOUT = float(input("Timeout değeri kaç saniye olsun? Örn 0.5/1/2: "))
 
 with open(file_path, "w") as file:
     for i in range(1, data_count + 1):
         file.write(f"NETPROBE TEST DATA {i}\n")
 
 print(f"{data_count} adet test verisi oluşturuldu: {file_path}")
+print(f"Paket boyutu: {CHUNK_SIZE} byte")
+print(f"Timeout değeri: {TIMEOUT} saniye")
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.settimeout(TIMEOUT)
@@ -45,7 +46,10 @@ def calculate_sha256(file_path):
     return sha256.hexdigest()
 
 original_hash = calculate_sha256(file_path)
+file_size = os.path.getsize(file_path)
+
 print(f"Orijinal dosya SHA-256: {original_hash}")
+print(f"Dosya boyutu: {file_size} byte")
 
 with open(log_path, "w", newline="") as log_file:
     writer = csv.writer(log_file)
@@ -57,7 +61,10 @@ with open(log_path, "w", newline="") as log_file:
         "rtt",
         "attempt",
         "timeout",
-        "status"
+        "status",
+        "chunk_size",
+        "timeout_value",
+        "file_size"
     ])
 
     seq_num = 0
@@ -98,7 +105,10 @@ with open(log_path, "w", newline="") as log_file:
                             rtt,
                             retries + 1,
                             "No",
-                            "ACK_RECEIVED"
+                            "ACK_RECEIVED",
+                            CHUNK_SIZE,
+                            TIMEOUT,
+                            file_size
                         ])
 
                         ack_received = True
@@ -115,7 +125,10 @@ with open(log_path, "w", newline="") as log_file:
                         "",
                         retries,
                         "Yes",
-                        "TIMEOUT"
+                        "TIMEOUT",
+                        CHUNK_SIZE,
+                        TIMEOUT,
+                        file_size
                     ])
 
             if not ack_received:
@@ -128,7 +141,10 @@ with open(log_path, "w", newline="") as log_file:
                     "",
                     retries,
                     "Yes",
-                    "FAILED"
+                    "FAILED",
+                    CHUNK_SIZE,
+                    TIMEOUT,
+                    file_size
                 ])
 
                 break
