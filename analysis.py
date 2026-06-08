@@ -5,6 +5,7 @@ import csv
 
 log_path = "logs/transfer_log.csv"
 experiment_path = "logs/experiment_results.csv"
+summary_path = "logs/experiment_summary.csv"
 
 os.makedirs("graphs", exist_ok=True)
 os.makedirs("logs", exist_ok=True)
@@ -99,12 +100,13 @@ plt.savefig(timeout_graph_path)
 print(f"Timeout grafiği oluşturuldu: {timeout_graph_path}")
 
 if save_experiment.lower() == "e":
-    file_exists = os.path.exists(experiment_path)
+    experiment_file_exists = os.path.exists(experiment_path)
+    summary_file_exists = os.path.exists(summary_path)
 
     with open(experiment_path, "a", newline="") as file:
         writer = csv.writer(file)
 
-        if not file_exists:
+        if not experiment_file_exists:
             writer.writerow([
                 "experiment_name",
                 "loss_rate",
@@ -113,6 +115,7 @@ if save_experiment.lower() == "e":
                 "timeout_value",
                 "total_packets",
                 "total_attempts",
+                "successful_acks",
                 "timeout_count",
                 "retransmission_count",
                 "retransmission_rate",
@@ -132,6 +135,7 @@ if save_experiment.lower() == "e":
             timeout_value,
             total_packets,
             total_attempts,
+            successful_acks,
             timeout_count,
             retransmission_count,
             retransmission_rate,
@@ -143,13 +147,54 @@ if save_experiment.lower() == "e":
             timeout_graph_path
         ])
 
-    print(f"Deney sonucu kaydedildi: {experiment_path}")
+    with open(summary_path, "a", newline="") as file:
+        writer = csv.writer(file)
+
+        if not summary_file_exists:
+            writer.writerow([
+                "Deney",
+                "ACK Kayip Orani (%)",
+                "Dosya Boyutu (byte)",
+                "Paket Boyutu (byte)",
+                "Timeout (s)",
+                "Toplam Paket",
+                "Timeout Sayisi",
+                "Retransmission Rate",
+                "Ortalama RTT (s)",
+                "Completion Time (s)",
+                "Throughput (byte/s)",
+                "Goodput (byte/s)"
+            ])
+
+        writer.writerow([
+            experiment_name,
+            loss_rate,
+            int(file_size),
+            int(chunk_size),
+            timeout_value,
+            total_packets,
+            timeout_count,
+            round(retransmission_rate, 4),
+            round(average_rtt, 6),
+            round(completion_time, 6),
+            round(throughput, 2),
+            round(goodput, 2)
+        ])
+
+    print(f"Detaylı deney sonucu kaydedildi: {experiment_path}")
+    print(f"Rapor için özet tablo kaydedildi: {summary_path}")
 
 # Deney karşılaştırma grafikleri
 if os.path.exists(experiment_path):
-    exp_df = pd.read_csv(experiment_path)
+    try:
+        exp_df = pd.read_csv(experiment_path)
+    except Exception:
+        print("Eski veya bozuk deney dosyası tespit edildi.")
+        print("Yeni deney dosyası oluşturmak için eski dosya siliniyor.")
+        os.remove(experiment_path)
+        exp_df = pd.DataFrame()
 
-    if len(exp_df) >= 2:
+    if not exp_df.empty and len(exp_df) >= 2:
         plt.figure(figsize=(9, 5))
         plt.bar(exp_df["experiment_name"], exp_df["completion_time"])
         plt.xlabel("Deney")
