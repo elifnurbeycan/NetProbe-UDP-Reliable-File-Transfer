@@ -1,73 +1,31 @@
 # NetProbe
 
-Reliable UDP File Transfer and Network Performance Analysis System
+Bilgisayar Ağları dersi kapsamında geliştirilen NetProbe, UDP protokolü üzerinde güvenilir dosya aktarımı gerçekleştiren ve ağ performansını analiz eden bir uygulamadır.
 
-## Features
+## Proje Özeti
 
-- Reliable file transfer over UDP
-- Sequence Number & ACK mechanism
-- Timeout and Retransmission support
-- Duplicate packet detection
-- SHA-256 file integrity verification
-- RTT, Throughput and Goodput analysis
-- CSV-based logging
-- Automatic graph generation
-- Wireshark traffic monitoring support
+UDP doğası gereği paket teslim garantisi sağlamaz. Bu projede UDP üzerine;
 
-## Technologies
+- Sequence Number
+- ACK (Onay) Mekanizması
+- Timeout Kontrolü
+- Retransmission (Yeniden Gönderim)
+- SHA-256 Bütünlük Doğrulaması
+
+mekanizmaları eklenerek güvenilir dosya aktarımı sağlanmıştır.
+
+## Kullanılan Teknolojiler
 
 - Python 3
-- UDP Sockets
-- SHA-256
+- UDP Socket Programlama
+- SHA-256 Hash Algoritması
 - Pandas
 - Matplotlib
 - Wireshark
 - Kali Linux (VMware)
+- Visual Studio Code
 
-## Run
-
-### Start Server
-
-```bash
-python3 server.py
-```
-
-### Start Client
-
-```bash
-python3 client.py
-```
-
-### Run Analysis
-
-```bash
-python3 analysis.py
-```
-
-## Experiments
-
-### ACK Loss Rate Analysis
-
-- 0%
-- 10%
-- 20%
-- 30%
-
-### Packet Size Analysis
-
-- 512 Bytes
-- 1024 Bytes
-- 2048 Bytes
-
-## Metrics
-
-- RTT
-- Throughput
-- Goodput
-- Completion Time
-- Retransmission Rate
-
-## Project Structure
+## Proje Yapısı
 
 ```text
 NetProbe/
@@ -88,10 +46,77 @@ NetProbe/
 └── graphs/
 ```
 
-## Authors
+## Çalıştırma
+
+### Sunucuyu Başlat
+
+```bash
+python3 server.py
+```
+
+### İstemciyi Başlat
+
+```bash
+python3 client.py
+```
+
+### Analizleri Oluştur
+
+```bash
+python3 analysis.py
+```
+
+## Gerçekleştirilen Deneyler
+
+### Senaryo 1 - ACK Kayıp Oranı Analizi
+
+- %0 ACK kaybı
+- %10 ACK kaybı
+- %20 ACK kaybı
+- %30 ACK kaybı
+
+İncelenen metrikler:
+
+- RTT
+- Throughput
+- Goodput
+- Completion Time
+- Retransmission Rate
+
+### Senaryo 2 - Paket Boyutu Analizi
+
+- 512 Byte
+- 1024 Byte
+- 2048 Byte
+
+İncelenen metrikler:
+
+- RTT
+- Throughput
+- Goodput
+- Completion Time
+- Retransmission Rate
+
+## Özellikler
+
+- Güvenilir UDP dosya aktarımı
+- ACK tabanlı kontrol mekanizması
+- Timeout yönetimi
+- Otomatik yeniden gönderim
+- Çift paket kontrolü
+- SHA-256 bütünlük doğrulaması
+- RTT hesaplama
+- Throughput ve Goodput analizi
+- CSV loglama
+- Otomatik grafik üretimi
+- Wireshark ile trafik analizi
+
+## Proje Ekibi
 
 - Elif Nur Beycan
 - Kübra Kaya
 - Ceren Ebrar Yücetombullar
 
-Computer Networks Project - 2026
+Bursa Teknik Üniversitesi  
+Bilgisayar Mühendisliği Bölümü  
+Bilgisayar Ağları Dönem Projesi - 2026
