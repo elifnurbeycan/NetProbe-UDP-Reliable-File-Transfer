@@ -1,0 +1,6 @@
+Deney,ACK Kayip Orani (%),Dosya Boyutu (byte),Paket Boyutu (byte),Timeout (s),Toplam Paket,Timeout Sayisi,Retransmission Rate,Ortalama RTT (s),Completion Time (s),Throughput (byte/s),Goodput (byte/s)
+data100,20,2192,1024,1.0,3,1,0.25,0.00026,1.024039,3999.85,2140.54
+data1000,20,22893,1024,1.0,23,4,0.1481,0.000278,4.242731,6516.56,5395.82
+data5000,20,118893,1024,1.0,117,28,0.1931,0.000566,29.361185,5057.02,4049.33
+deney1,10,22893,1024,1.0,23,1,0.0417,0.000307,1.241672,19792.67,18437.24
+deneme1,10,22893,512,0.5,45,5,0.1,0.000216,2.993047,8553.16,7648.73

@@ -1,0 +1,6 @@
+experiment_name,loss_rate,file_size,chunk_size,timeout_value,total_packets,total_attempts,successful_acks,timeout_count,retransmission_count,retransmission_rate,average_rtt,completion_time,throughput,goodput,rtt_graph,timeout_graph
+data100,20,2192,1024,1.0,3,4,3,1,1,0.25,0.0002596378326415333,1.0240387916564941,3999.8484758319305,2140.5439108944315,graphs/data100_rtt_graph.png,graphs/data100_timeout_distribution.png
+data1000,20,22893,1024,1.0,23,27,23,4,4,0.14814814814814814,0.00027785093887988736,4.242730617523193,6516.557965242737,5395.817473173538,graphs/data1000_rtt_graph.png,graphs/data1000_timeout_distribution.png
+data5000,20,118893,1024,1.0,117,145,117,28,28,0.19310344827586207,0.0005660179333808685,29.361185312271118,5057.016548236721,4049.325622774168,graphs/data5000_rtt_graph.png,graphs/data5000_timeout_distribution.png
+deney1,10,22893,1024,1.0,23,24,23,1,1,0.041666666666666664,0.0003071867901345521,1.2416720390319824,19792.666040188557,18437.23566316881,graphs/deney1_rtt_graph.png,graphs/deney1_timeout_distribution.png
+deneme1,10,22893,512,0.5,45,50,45,5,5,0.1,0.00021622445848249017,2.993046760559082,8553.157383755035,7648.727811965,graphs/deneme1_rtt_graph.png,graphs/deneme1_timeout_distribution.png
