@@ -5,7 +5,7 @@ import random
 
 HOST = "127.0.0.1"
 PORT = 5000
-BUFFER_SIZE = 2048
+BUFFER_SIZE = 4096
 
 os.makedirs("files/received", exist_ok=True)
 
