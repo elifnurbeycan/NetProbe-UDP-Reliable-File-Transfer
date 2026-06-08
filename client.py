@@ -17,6 +17,15 @@ file_path = "files/input/test.txt"
 log_path = "logs/transfer_log.csv"
 
 os.makedirs("logs", exist_ok=True)
+os.makedirs("files/input", exist_ok=True)
+
+data_count = int(input("Kaç adet test verisi oluşturulsun?: "))
+
+with open(file_path, "w") as file:
+    for i in range(1, data_count + 1):
+        file.write(f"NETPROBE TEST DATA {i}\n")
+
+print(f"{data_count} adet test verisi oluşturuldu: {file_path}")
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client_socket.settimeout(TIMEOUT)
@@ -70,7 +79,6 @@ with open(log_path, "w", newline="") as log_file:
                 send_time = time.time()
 
                 client_socket.sendto(packet, (HOST, PORT))
-
                 print(f"Paket gönderildi. Sequence: {seq_num}, Deneme: {retries + 1}")
 
                 try:
@@ -78,7 +86,6 @@ with open(log_path, "w", newline="") as log_file:
 
                     ack_time = time.time()
                     rtt = ack_time - send_time
-
                     ack_text = ack.decode()
 
                     if ack_text == f"ACK|{seq_num}":
